@@ -5,6 +5,7 @@ import {sql} from '@vercel/postgres';
 import {revalidatePath} from "next/cache";
 import {redirect} from "next/navigation";
 
+const invoicesPath = '/dashboard/invoices';
 const FormScheme = z.object({
     id: z.string(),
     customerId: z.string(),
@@ -12,7 +13,6 @@ const FormScheme = z.object({
     status: z.enum(['pending', 'paid']),
     date: z.string()
 })
-
 const CreateInvoice = FormScheme.omit({id: true, date: true});
 
 export async function createInvoice(formData: FormData) {
@@ -31,7 +31,6 @@ export async function createInvoice(formData: FormData) {
         INSERT INTO invoices (customer_id, amount, status, date)
         VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
     `;
-    const invoicesPath = '/dashboard/invoices';
     revalidatePath(invoicesPath);
     redirect(invoicesPath);
 }
@@ -52,6 +51,13 @@ export async function updateInvoice(id: string, formData: FormData) {
             status      = ${status}
         WHERE id = ${id}
     `;
-    revalidatePath('/dashboard/invoices');
-    redirect('/dashboard/invoices');
+    revalidatePath(invoicesPath);
+    redirect(invoicesPath);
+}
+export async function deleteInvoice(id: string) {
+    await sql`
+    DELETE FROM invoices
+    WHERE id = ${id}
+    `;
+    revalidatePath(invoicesPath)
 }
