@@ -5,7 +5,7 @@ export default function Error({
                                   errors
                               }: {
     errorId: string,
-    errors: errors
+    errors: string[]
 }) {
     return (
         <div id={errorId} aria-live="polite" aria-atomic="true">
